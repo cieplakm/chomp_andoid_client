@@ -7,7 +7,7 @@ import com.mmc.chomp.app.response.MoveResponse;
 import com.mmc.chomp.app.response.PlayerJoinedResponse;
 import com.mmc.chomp.app.response.PlayerLeftResponse;
 
-interface ViewListener {
+public interface ViewListener {
 
     void onGameCreated(GameCreatedResponse response);
 
