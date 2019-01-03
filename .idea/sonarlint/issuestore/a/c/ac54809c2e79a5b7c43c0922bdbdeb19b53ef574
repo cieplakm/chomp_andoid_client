@@ -1,0 +1,7 @@
+
+Ysquid:S1854"=Remove this useless assignment to local variable "editText2".(÷ù¥Œ8ºÔË¹ÿ,
+]squid:S1854"<Remove this useless assignment to local variable "editText".(¸±‚®ýÿÿÿÿ8ºÔË¹ÿ,
+Jsquid:S1481".Remove this unused "editText2" local variable.(÷ù¥Œ8ºÔË¹ÿ,
+Zsquid:UselessImportCheck",Remove this unused import 'okhttp3.Request'.(¬ßØŽÿÿÿÿÿ8ºÔË¹ÿ,
+Wsquid:UselessImportCheck".Remove this unused import 'okhttp3.WebSocket'.(¨æ‚…8ºÔË¹ÿ,
+Nsquid:S1481"-Remove this unused "editText" local variable.(¸±‚®ýÿÿÿÿ8ºÔË¹ÿ,
