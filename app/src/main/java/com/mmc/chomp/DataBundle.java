@@ -1,14 +1,11 @@
 package com.mmc.chomp;
 
-import com.mmc.chomp.app.response.GameCreatedResponse;
-
-class DataBundle {
 
 
-    private GameCreatedResponse gameCreatedResponse;
+public class DataBundle {
+    private String gameCreatedResponse;
 
-    void gameCreated(GameCreatedResponse gameId){
-
+    public void gameCreated(String gameId){
         this.gameCreatedResponse = gameId;
     }
 

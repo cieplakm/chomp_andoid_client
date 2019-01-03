@@ -3,7 +3,6 @@ package com.mmc.chomp;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +20,10 @@ public class BoardViewAdapter extends BaseAdapter {
 
     private List<Chocolate> chocolates;
 
-    public BoardViewAdapter(Context context, OnChocolateChooseListener onChocolateChooseListener, boolean[][] board) {
+    private OnChocolateChooseListener chocolateChooseListener;
+
+    public BoardViewAdapter(Context context) {
         this.context = context;
-        this.onChocolateChooseListener = onChocolateChooseListener;
-        chocolates = mapBooleansToChocolates(board);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class BoardViewAdapter extends BaseAdapter {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onChocolateChooseListener.choosed(item);
+                onChocolateChooseListener.onChoose(item);
             }
         });
         return view;
@@ -82,5 +81,9 @@ public class BoardViewAdapter extends BaseAdapter {
         }
 
         return list;
+    }
+
+    public void setListener(OnChocolateChooseListener chocolateChooseListener) {
+        this.chocolateChooseListener = chocolateChooseListener;
     }
 }

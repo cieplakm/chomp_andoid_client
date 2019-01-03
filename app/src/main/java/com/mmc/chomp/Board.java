@@ -75,6 +75,9 @@ public class Board extends AppCompatActivity implements ViewListener {
                 client.send(new JoinCommand("JOIN", USER_ID, bundle.getGameId()));
             }
         });
+
+        baseAdapter = new BoardViewAdapter(Board.this);
+        grid.setAdapter(baseAdapter);
     }
 
     //@OnClick(R.id.btn_start)
@@ -84,27 +87,38 @@ public class Board extends AppCompatActivity implements ViewListener {
 
     @Override
     public void onGameCreated(final GameCreatedResponse response) {
-        baseAdapter = new BoardViewAdapter(this, new OnChocolateChooseListener() {
-            @Override
-            public void choosed(Chocolate chocolate) {
-                client.send(new MoveCommand("MOVE", USER_ID, bundle.getGameId(), chocolate.getRow(), chocolate.getCol()));
-            }
-        }, response.getBoard());
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                grid.setAdapter(baseAdapter);
-
-                grid.setNumColumns(response.getCols());
+                Toast.makeText(Board.this, "Gra stworzona", Toast.LENGTH_SHORT).show();
             }
         });
 
-        bundle.gameCreated(response);
+        bundle.gameCreated(response.getGameId());
     }
 
     @Override
-    public void onGameStarted(GameStartedResponse response) {
+    public void onGameStarted(final GameStartedResponse response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(Board.this, "Gra rozpoczęta", Toast.LENGTH_SHORT).show();
 
+                setupProgressBar(response.isMyTurn());
+
+                onChocolateChooseListener = new OnChocolateChooseListener() {
+                    @Override
+                    public void onChoose(Chocolate chocolate) {
+                        if (response.isMyTurn()) {
+                            client.send(new MoveCommand("MOVE", USER_ID, bundle.getGameId(), chocolate.getRow(), chocolate.getCol()));
+                        }
+                    }
+                };
+
+                baseAdapter.setListener(onChocolateChooseListener);
+                setupGrid(response.getGameState().getBoard(), response.getGameState().getCols());
+            }
+        });
     }
 
     @Override
@@ -112,7 +126,7 @@ public class Board extends AppCompatActivity implements ViewListener {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(Board.this, "dołączył do gry " +  response.getJoinerName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Board.this, "dołączył do gry ", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -130,35 +144,42 @@ public class Board extends AppCompatActivity implements ViewListener {
 
     @Override
     public void onMove(final MoveResponse move) {
-
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
 
                 onChocolateChooseListener = new OnChocolateChooseListener() {
                     @Override
-                    public void choosed(Chocolate chocolate) {
+                    public void onChoose(Chocolate chocolate) {
                         if (move.isMyTourTurn()) {
                             client.send(new MoveCommand("MOVE", USER_ID, bundle.getGameId(), chocolate.getRow(), chocolate.getCol()));
                         }
                     }
                 };
 
-                baseAdapter = new BoardViewAdapter(Board.this, onChocolateChooseListener, move.getBoardState());
+                baseAdapter.setListener(chocolateChooseListener);
 
-                grid.setAdapter(baseAdapter);
-                grid.setNumColumns(5);
+                setupGrid(move.getGameState().getBoard(), move.getGameState().getCols());
 
-                baseAdapter.newSetOfData(move.getBoardState());
-
-                if (move.isMyTourTurn()) {
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
+                boolean myTourTurn = move.isMyTourTurn();
+                setupProgressBar(myTourTurn);
             }
         });
 
+    }
+
+    private void setupProgressBar(boolean myTourTurn) {
+        if (myTourTurn) {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(Board.this, "Twój ruch!", Toast.LENGTH_SHORT).show();
+        } else {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void setupGrid(boolean[][] board, int cols) {
+        grid.setNumColumns(cols);
+        baseAdapter.newSetOfData(board);
     }
 
     @Override
