@@ -20,7 +20,6 @@ public class BoardViewAdapter extends BaseAdapter {
 
     private List<Chocolate> chocolates;
 
-    private OnChocolateChooseListener chocolateChooseListener;
 
     public BoardViewAdapter(Context context) {
         this.context = context;
@@ -49,9 +48,9 @@ public class BoardViewAdapter extends BaseAdapter {
 
         Drawable drawable;
         if (item.isTaken()) {
-            drawable = ContextCompat.getDrawable(context, R.drawable.ic_chocolate);
-        }else {
             drawable = ContextCompat.getDrawable(context, R.drawable.ic_empty_chocolate);
+        }else {
+            drawable = ContextCompat.getDrawable(context, R.drawable.ic_chocolate);
         }
 
         image.setImageDrawable(drawable);
@@ -84,6 +83,6 @@ public class BoardViewAdapter extends BaseAdapter {
     }
 
     public void setListener(OnChocolateChooseListener chocolateChooseListener) {
-        this.chocolateChooseListener = chocolateChooseListener;
+        this.onChocolateChooseListener = chocolateChooseListener;
     }
 }

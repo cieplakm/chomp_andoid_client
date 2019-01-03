@@ -20,7 +20,7 @@ import com.mmc.chomp.commands.StartCommand;
 
 public class Board extends AppCompatActivity implements ViewListener {
 
-    public String USER_ID = LoginKeeper.getInstance().getUserId();
+    public String USER_ID = LoginKeeper.getInstance().getUserId2();
 
     //@BindView(R.id.btn_start)
     Button start;
@@ -53,7 +53,10 @@ public class Board extends AppCompatActivity implements ViewListener {
         grid = findViewById(R.id.gv_board);
         progressBar = findViewById(R.id.progressBar);
 
-        USER_ID = LoginKeeper.getInstance().getUserId2();
+        final int rows = getIntent().getExtras().getInt("rows");
+        final int cols = getIntent().getExtras().getInt("cols");
+
+        USER_ID = LoginKeeper.getInstance().getUserId();
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +69,7 @@ public class Board extends AppCompatActivity implements ViewListener {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                client.send(new CreateCommand("CREATE", USER_ID, 5, 5));
+                client.send(new CreateCommand("CREATE", USER_ID, rows, cols));
             }
         });
         join.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +160,7 @@ public class Board extends AppCompatActivity implements ViewListener {
                     }
                 };
 
-                baseAdapter.setListener(chocolateChooseListener);
+                baseAdapter.setListener(onChocolateChooseListener);
 
                 setupGrid(move.getGameState().getBoard(), move.getGameState().getCols());
 
