@@ -1,6 +1,8 @@
 package com.mmc.chomp;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -18,9 +20,9 @@ import com.mmc.chomp.commands.JoinCommand;
 import com.mmc.chomp.commands.MoveCommand;
 import com.mmc.chomp.commands.StartCommand;
 
-public class Board extends AppCompatActivity implements ViewListener {
+public class Board extends AppCompatActivity implements Game {
 
-    public String USER_ID = LoginKeeper.getInstance().getUserId2();
+    public static final String USER_ID = LoginKeeper.getInstance().getUserId2();
 
     //@BindView(R.id.btn_start)
     Button start;
@@ -42,40 +44,37 @@ public class Board extends AppCompatActivity implements ViewListener {
 
     private Button create;
 
+    private AlertDialog alertDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_board);
+
+        IoC.createClient(this);
+        client = IoC.getClient();
+
         //ButterKnife.bind(this);
-        start = findViewById(R.id.btn_start);
-        join = findViewById(R.id.btn_join);
-        create = findViewById(R.id.btn_create);
         grid = findViewById(R.id.gv_board);
         progressBar = findViewById(R.id.progressBar);
 
-        final int rows = getIntent().getExtras().getInt("rows");
-        final int cols = getIntent().getExtras().getInt("cols");
+        Bundle extras = getIntent().getExtras();
 
-        USER_ID = LoginKeeper.getInstance().getUserId();
+        boolean isJoining = extras.getBoolean("join", false);
+
+        if (isJoining) {
+            client.send(new JoinCommand("JOIN", USER_ID, bundle.getGameId()));
+        }else {
+            final int rows = extras.getInt("rows");
+            final int cols = extras.getInt("cols");
+
+            client.send(new CreateCommand("CREATE", USER_ID, rows, cols));
+        }
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onStartClicked();
-            }
-        });
-
-        client = new Client(USER_ID, new ChompWebSocketListener(this));
-        create.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                client.send(new CreateCommand("CREATE", USER_ID, rows, cols));
-            }
-        });
-        join.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                client.send(new JoinCommand("JOIN", USER_ID, bundle.getGameId()));
             }
         });
 
@@ -85,7 +84,7 @@ public class Board extends AppCompatActivity implements ViewListener {
 
     //@OnClick(R.id.btn_start)
     public void onStartClicked() {
-        client.send(new StartCommand("START", USER_ID, bundle.getGameId()));
+
     }
 
     @Override
@@ -120,6 +119,10 @@ public class Board extends AppCompatActivity implements ViewListener {
 
                 baseAdapter.setListener(onChocolateChooseListener);
                 setupGrid(response.getGameState().getBoard(), response.getGameState().getCols());
+
+                if (alertDialog != null) {
+                    alertDialog.hide();
+                }
             }
         });
     }
@@ -130,6 +133,12 @@ public class Board extends AppCompatActivity implements ViewListener {
             @Override
             public void run() {
                 Toast.makeText(Board.this, "dołączył do gry ", Toast.LENGTH_SHORT).show();
+                alertDialog = showAlert(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        client.send(new StartCommand("START", USER_ID, bundle.getGameId()));
+                    }
+                });
             }
         });
     }
@@ -171,6 +180,17 @@ public class Board extends AppCompatActivity implements ViewListener {
 
     }
 
+    @Override
+    public void onPlayerLeft(PlayerLeftResponse response) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(Board.this, "opuścił grę", Toast.LENGTH_SHORT).show();
+                alertDialog.hide();
+            }
+        });
+    }
+
     private void setupProgressBar(boolean myTourTurn) {
         if (myTourTurn) {
             progressBar.setVisibility(View.GONE);
@@ -185,13 +205,11 @@ public class Board extends AppCompatActivity implements ViewListener {
         baseAdapter.newSetOfData(board);
     }
 
-    @Override
-    public void onPlayerLeft(PlayerLeftResponse response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(Board.this, "opuścił grę", Toast.LENGTH_SHORT).show();
-            }
-        });
+    public AlertDialog showAlert(DialogInterface.OnClickListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Strt?")
+                .setPositiveButton("TAK", listener);
+        return builder.create();
     }
+
 }

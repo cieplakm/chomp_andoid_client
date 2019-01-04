@@ -18,11 +18,11 @@ import okio.ByteString;
 class ChompWebSocketListener extends WebSocketListener {
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private ViewListener viewListener;
+    private Game game;
 
-    public ChompWebSocketListener(ViewListener viewListener) {
+    public ChompWebSocketListener(Game game) {
 
-        this.viewListener = viewListener;
+        this.game = game;
     }
 
     @Override
@@ -43,23 +43,23 @@ class ChompWebSocketListener extends WebSocketListener {
 
         switch (response.getType()) {
             case "GAME_CREATED":
-                viewListener.onGameCreated((GameCreatedResponse) response);
+                game.onGameCreated((GameCreatedResponse) response);
                 break;
             case "GAME_STARTED":
-                viewListener.onGameStarted((GameStartedResponse) response);
+                game.onGameStarted((GameStartedResponse) response);
                 break;
             case "MOVE":
                 MoveResponse move = (MoveResponse) response;
-                viewListener.onMove(move);
+                game.onMove(move);
                 break;
             case "GAME_OVER":
-                viewListener.onGameOver((GameOverResponse) response);
+                game.onGameOver((GameOverResponse) response);
                 break;
             case "PLAYER_JOINED":
-                viewListener.onNewJoiner((PlayerJoinedResponse) response);
+                game.onNewJoiner((PlayerJoinedResponse) response);
                 break;
             case "PLAYER_LEFT":
-                viewListener.onPlayerLeft((PlayerLeftResponse) response);
+                game.onPlayerLeft((PlayerLeftResponse) response);
                 break;
         }
     }

@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         final SeekBar sbRows = findViewById(R.id.sbRows);
         final SeekBar sbCols = findViewById(R.id.sbCols);
         Button button = findViewById(R.id.button);
+        Button btnJoin = findViewById(R.id.btnJoin);
 
         sbRows.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -82,6 +83,15 @@ public class MainActivity extends AppCompatActivity {
                startActivity(intent);
            }
        });
+
+        btnJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Board.class);
+                intent.putExtra("join", true);
+                startActivity(intent);
+            }
+        });
 
 
 
