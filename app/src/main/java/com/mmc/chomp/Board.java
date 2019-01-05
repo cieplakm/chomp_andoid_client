@@ -19,13 +19,11 @@ import com.mmc.chomp.commands.CreateCommand;
 import com.mmc.chomp.commands.JoinCommand;
 import com.mmc.chomp.commands.MoveCommand;
 import com.mmc.chomp.commands.StartCommand;
+import com.mmc.chomp.commands.WantToPlayCommand;
 
 public class Board extends AppCompatActivity implements Game {
 
-    public static final String USER_ID = LoginKeeper.getInstance().getUserId2();
-
-    //@BindView(R.id.btn_start)
-    Button start;
+    public static final String USER_ID = IoC.getUserId();
 
     // @BindView(R.id.gv_board)
     GridView grid;
@@ -39,10 +37,6 @@ public class Board extends AppCompatActivity implements Game {
     private DataBundle bundle = new DataBundle();
 
     private OnChocolateChooseListener onChocolateChooseListener;
-
-    private Button join;
-
-    private Button create;
 
     private AlertDialog alertDialog;
 
@@ -60,43 +54,18 @@ public class Board extends AppCompatActivity implements Game {
 
         Bundle extras = getIntent().getExtras();
 
-        boolean isJoining = extras.getBoolean("join", false);
+        int rows = extras.getInt("rows", 5);
+        int cols = extras.getInt("cols", 5);
 
-        if (isJoining) {
-            client.send(new JoinCommand("JOIN", USER_ID, bundle.getGameId()));
-        }else {
-            final int rows = extras.getInt("rows");
-            final int cols = extras.getInt("cols");
-
-            client.send(new CreateCommand("CREATE", USER_ID, rows, cols));
-        }
-
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onStartClicked();
-            }
-        });
+        client.send(new WantToPlayCommand(USER_ID, rows, cols));
 
         baseAdapter = new BoardViewAdapter(Board.this);
         grid.setAdapter(baseAdapter);
     }
 
-    //@OnClick(R.id.btn_start)
-    public void onStartClicked() {
-
-    }
-
     @Override
     public void onGameCreated(final GameCreatedResponse response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(Board.this, "Gra stworzona", Toast.LENGTH_SHORT).show();
-            }
-        });
 
-        bundle.gameCreated(response.getGameId());
     }
 
     @Override
@@ -144,11 +113,11 @@ public class Board extends AppCompatActivity implements Game {
     }
 
     @Override
-    public void onGameOver(GameOverResponse response) {
+    public void onGameOver(final GameOverResponse response) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(Board.this, "Koniec gry", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Board.this, response.isWon() ? "Wygrales":"Przegrales", Toast.LENGTH_SHORT).show();
                 finish();
             }
         });

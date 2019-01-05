@@ -1,33 +1,36 @@
 package com.mmc.chomp;
 
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity {
 
-    OkHttpClient client=new OkHttpClient();
     private int cols;
     private int rows;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final EditText etRows = findViewById(R.id.etRows);
-        final EditText etCols = findViewById(R.id.etCols);
+        final TextView etRows = findViewById(R.id.etRows);
+        final TextView etCols = findViewById(R.id.etCols);
         final SeekBar sbRows = findViewById(R.id.sbRows);
         final SeekBar sbCols = findViewById(R.id.sbCols);
-        Button button = findViewById(R.id.button);
-        Button btnJoin = findViewById(R.id.btnJoin);
+
+        Button btnPlay = findViewById(R.id.button);
 
         sbRows.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -35,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "" + progress, Toast.LENGTH_SHORT).show();
                 etRows.setText(" " + progress);
                 rows = progress;
-
             }
 
             @Override
@@ -54,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Toast.makeText(MainActivity.this, "" + progress, Toast.LENGTH_SHORT).show();
                 etCols.setText(" " + progress);
-
                 cols = progress;
             }
 
@@ -70,11 +71,16 @@ public class MainActivity extends AppCompatActivity {
         });
 
         sbRows.incrementProgressBy(1);
-        sbRows.setMax(7);
-        sbCols.incrementProgressBy(1);
-        sbCols.setMax(7);
+        sbRows.setMax(10);
+        //sbRows.setMin(3);
+        sbRows.setProgress(5);
 
-       button.setOnClickListener(new View.OnClickListener() {
+        sbCols.incrementProgressBy(1);
+        sbCols.setMax(10);
+        //sbCols.setMin(3);
+        sbCols.setProgress(5);
+
+       btnPlay.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
                Intent intent = new Intent(MainActivity.this, Board.class);
@@ -83,17 +89,6 @@ public class MainActivity extends AppCompatActivity {
                startActivity(intent);
            }
        });
-
-        btnJoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, Board.class);
-                intent.putExtra("join", true);
-                startActivity(intent);
-            }
-        });
-
-
 
     }
 }

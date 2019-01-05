@@ -11,4 +11,8 @@ public class IoC {
     public static Client getClient() {
         return client;
     }
+
+    public static String getUserId() {
+        return USER_ID;
+    }
 }
