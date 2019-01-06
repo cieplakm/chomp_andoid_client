@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         sbRows.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Toast.makeText(MainActivity.this, "" + progress, Toast.LENGTH_SHORT).show();
                 etRows.setText(" " + progress);
                 rows = progress;
             }
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         sbCols.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Toast.makeText(MainActivity.this, "" + progress, Toast.LENGTH_SHORT).show();
                 etCols.setText(" " + progress);
                 cols = progress;
             }

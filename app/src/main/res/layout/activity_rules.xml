@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RulesActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Chomp – gra dla dwóch graczy, którą rozgrywa się na prostokątnej planszy („tabliczce czekolady”). Plansza dzieli się na mniejsze, kwadratowe kostki. Gracz podczas ruchu musi wybrać jedną z kostek i „zjeść ją”, tj. usunąć ją z planszy razem z kostkami znajdującymi się poniżej i na prawo od niej. Kostka w lewym górnym rogu jest zatruta – ten gracz, który ją weźmie, przegrywa."
+        android:textSize="24sp" />
+
+
+
+</android.support.design.widget.CoordinatorLayout>

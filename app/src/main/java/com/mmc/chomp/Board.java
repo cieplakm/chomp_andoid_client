@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.mmc.chomp.app.response.GameCreatedResponse;
 import com.mmc.chomp.app.response.GameOverResponse;
@@ -39,6 +40,7 @@ public class Board extends AppCompatActivity implements Game {
     private OnChocolateChooseListener onChocolateChooseListener;
 
     private AlertDialog alertDialog;
+    private TextView tvInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,8 @@ public class Board extends AppCompatActivity implements Game {
         //ButterKnife.bind(this);
         grid = findViewById(R.id.gv_board);
         progressBar = findViewById(R.id.progressBar);
+        tvInfo = findViewById(R.id.tvInfo);
+        tvInfo.setText("Czekaj na przeciwnika...");
 
         Bundle extras = getIntent().getExtras();
 
@@ -73,9 +77,8 @@ public class Board extends AppCompatActivity implements Game {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(Board.this, "Gra rozpoczęta", Toast.LENGTH_SHORT).show();
-
                 setupProgressBar(response.isMyTurn());
+                tvInfo.setText(response.isMyTurn()?"Twój ruch!":"Czekaj na ruch przeciwnika");
 
                 onChocolateChooseListener = new OnChocolateChooseListener() {
                     @Override
@@ -98,18 +101,7 @@ public class Board extends AppCompatActivity implements Game {
 
     @Override
     public void onNewJoiner(PlayerJoinedResponse response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(Board.this, "dołączył do gry ", Toast.LENGTH_SHORT).show();
-                alertDialog = showAlert(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        client.send(new StartCommand("START", USER_ID, bundle.getGameId()));
-                    }
-                });
-            }
-        });
+
     }
 
     @Override
@@ -117,14 +109,14 @@ public class Board extends AppCompatActivity implements Game {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(Board.this, response.isWon() ? "Wygrales":"Przegrales", Toast.LENGTH_SHORT).show();
-                finish();
+                showMessage(response.isWon() ? "Wygrales.":"Przegrales. Twój ranking to: 124324 pkt." );
+
             }
         });
     }
 
     @Override
-    public void onMove(final MoveResponse move) {
+    public void onMove(final MoveResponse response) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -132,7 +124,7 @@ public class Board extends AppCompatActivity implements Game {
                 onChocolateChooseListener = new OnChocolateChooseListener() {
                     @Override
                     public void onChoose(Chocolate chocolate) {
-                        if (move.isMyTourTurn()) {
+                        if (response.isMyTourTurn()) {
                             client.send(new MoveCommand("MOVE", USER_ID, bundle.getGameId(), chocolate.getRow(), chocolate.getCol()));
                         }
                     }
@@ -140,10 +132,12 @@ public class Board extends AppCompatActivity implements Game {
 
                 baseAdapter.setListener(onChocolateChooseListener);
 
-                setupGrid(move.getGameState().getBoard(), move.getGameState().getCols());
+                setupGrid(response.getGameState().getBoard(), response.getGameState().getCols());
 
-                boolean myTourTurn = move.isMyTourTurn();
+                boolean myTourTurn = response.isMyTourTurn();
                 setupProgressBar(myTourTurn);
+                tvInfo.setText(response.isMyTourTurn()?"Twój ruch!":"Czekaj na ruch przeciwnika");
+
             }
         });
 
@@ -151,21 +145,16 @@ public class Board extends AppCompatActivity implements Game {
 
     @Override
     public void onPlayerLeft(PlayerLeftResponse response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(Board.this, "opuścił grę", Toast.LENGTH_SHORT).show();
-                alertDialog.hide();
-            }
-        });
+
     }
 
     private void setupProgressBar(boolean myTourTurn) {
         if (myTourTurn) {
             progressBar.setVisibility(View.GONE);
-            Toast.makeText(Board.this, "Twój ruch!", Toast.LENGTH_SHORT).show();
+            //tvInfo.setVisibility(View.GONE);
         } else {
             progressBar.setVisibility(View.VISIBLE);
+            //tvInfo.setVisibility(View.VISIBLE);
         }
     }
 
@@ -174,10 +163,15 @@ public class Board extends AppCompatActivity implements Game {
         baseAdapter.newSetOfData(board);
     }
 
-    public AlertDialog showAlert(DialogInterface.OnClickListener listener) {
+    public AlertDialog showMessage(String msg) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Strt?")
-                .setPositiveButton("TAK", listener);
+        builder.setMessage(msg)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Board.this.finish();
+                    }
+                });
         return builder.create();
     }
 

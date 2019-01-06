@@ -6,6 +6,7 @@ public class LoginKeeper {
     private final String userId = "2b9d9694-6513-43d3-84d7-bbed57b82df1";
 
     private final String userId2 = "36e68452-12e8-4c3e-99b5-a046c0fba42b";
+    private final String userId3 = "c96110d1-74fe-45d7-8ede-4639503f7294";
 
     public static LoginKeeper getInstance() {
         return ourInstance;

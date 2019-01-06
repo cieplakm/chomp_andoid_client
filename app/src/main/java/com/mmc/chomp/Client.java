@@ -29,7 +29,7 @@ public class Client {
 
     private void setup() {
         request = new Request.Builder()
-                .url("ws://10.0.2.2:8080/chomp")
+                .url(IoC.IP_ADDRESS)
                 .header("UserId", userId).build();
 
 

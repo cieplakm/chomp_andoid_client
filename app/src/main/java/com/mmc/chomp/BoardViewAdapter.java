@@ -53,6 +53,11 @@ public class BoardViewAdapter extends BaseAdapter {
             drawable = ContextCompat.getDrawable(context, R.drawable.ic_chocolate);
         }
 
+        if (position == 0){
+            drawable = ContextCompat.getDrawable(context, R.drawable.ic_chocolate_poision);
+        }
+
+
         image.setImageDrawable(drawable);
 
         image.setOnClickListener(new View.OnClickListener() {
