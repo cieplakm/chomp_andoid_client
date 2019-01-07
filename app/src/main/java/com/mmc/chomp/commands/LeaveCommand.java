@@ -5,8 +5,8 @@ public class LeaveCommand {
     private String userId;
     private String gameId;
 
-    public LeaveCommand(String requestType, String userId, String gameId) {
-        this.requestType = requestType;
+    public LeaveCommand(String userId, String gameId) {
+        this.requestType = "LEAVE";
         this.userId = userId;
         this.gameId = gameId;
     }

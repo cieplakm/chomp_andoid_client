@@ -18,6 +18,7 @@ import com.mmc.chomp.app.response.PlayerJoinedResponse;
 import com.mmc.chomp.app.response.PlayerLeftResponse;
 import com.mmc.chomp.commands.CreateCommand;
 import com.mmc.chomp.commands.JoinCommand;
+import com.mmc.chomp.commands.LeaveCommand;
 import com.mmc.chomp.commands.MoveCommand;
 import com.mmc.chomp.commands.StartCommand;
 import com.mmc.chomp.commands.WantToPlayCommand;
@@ -109,7 +110,7 @@ public class Board extends AppCompatActivity implements Game {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                showMessage(response.isWon() ? "Wygrales.":"Przegrales. Twój ranking to: 124324 pkt." );
+                showMessage(response.isWon() ? "Wygrales.":"Przegrales. Twój ranking to: 124324 pkt." ).show();
 
             }
         });
@@ -175,4 +176,9 @@ public class Board extends AppCompatActivity implements Game {
         return builder.create();
     }
 
+    @Override
+    public void onBackPressed() {
+        client.send(new LeaveCommand(USER_ID, bundle.getGameId()));
+        super.onBackPressed();
+    }
 }
